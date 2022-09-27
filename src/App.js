@@ -5,7 +5,7 @@ import {
   Routes,
   Route,
   Navigate,
-  BrowserRouter,
+  useLocation,
   Outlet,
 } from "react-router-dom";
 import ChatApp from "./components/ChatApp/ChatApp";
@@ -33,29 +33,18 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-const PrivateRoute = ({ ...props }) => {
-  const context = useContext(UserContext);
-  return context.authService.isLoggedIn ? (
-    <Outlet context={{ ...props }} />
-  ) : (
-    <Navigate context={{ ...props }} to="/login" />
-  );
-  /*  <Route
-      {...props}
-      render={({ location }) =>
-        isLoggedIn ? (
-          children
-        ) : (
-          <Navigate to={{ pathname: "/login", state: { from: location } }} />
-        )
-      }
-    /> */
+const PrivateRoute = ({...props}) => {
+  const location = useLocation();
+  const context = useContext(UserContext)
+  return (
+	context.authService.isLoggedIn ? <Outlet/> : <Navigate  to='login' state={{ prevPath: location.pathname}}/>
+  )
 };
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <Router>
         <Routes>
           <Route path="/login" element={<UserLogin />} />
           <Route path="/register" element={<UserCreate />} />
@@ -72,25 +61,11 @@ function App() {
             }
           /> */}
         </Routes>
-      </BrowserRouter>
+      </Router>
     </AuthProvider>
   );
 }
 
-{
-  /* <nav>
-				<ul>
-					<li>
-						<Link to="/">Home</Link>
-					</li>
-					<li>
-						<Link to="/login">Login</Link>
-					</li>
-					<li>
-						<Link to="/register">Register</Link>
-					</li>
-				</ul>
-			</nav> */
-}
+ 
 
 export default App;
