@@ -1,12 +1,14 @@
 import React, { useState, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import Modal from "../Modal/Modal";
 import "./UserCreate.css";
 import { AVATARS } from "../constants.js";
 import { UserContext } from "../../App";
+import Alert from "../Alert/Alert";
 
-const UserCreate = () => {
+const UserCreate = ( history ) => {
   const { authService } = useContext(UserContext);
+  const navigate = useNavigate();
   const INIT_STATE = {
     userName: "",
     email: "",
@@ -16,6 +18,8 @@ const UserCreate = () => {
   };
   const [userInfo, setUserInfo] = useState(INIT_STATE);
   const [modal, setModal] = useState(false);
+  const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const onChange = ({ target: { name, value } }) => {
     setUserInfo({ ...userInfo, [name]: value });
@@ -35,21 +39,35 @@ const UserCreate = () => {
 	e.preventDefault();
 	const { userName, email, password, avatarName, avatarColor } = userInfo;
 	if (!!userName && !!email && !!password) {
+		setIsLoading(true);
 		 authService.registerUser(email,password).then(() => {
 			authService.loginUser(email, password).then(()=> {
 				authService.createUser(userName, email, avatarName, avatarColor).then(() => {
 					setUserInfo(INIT_STATE);
+					navigate('/');
+				}).catch((error) => {
+					console.log('Creating user',error);
+					setError(true);
 				})
+			}).catch((error) => {
+				console.log('Loggin in user',error);
+				setError(true);
 			})
-		 })
+		 }).catch((error) => {
+			console.log('Registering user',error);
+			setError(true);
+		})
+		setIsLoading(false);
 	}
   }
 
   const { userName, email, password, avatarName, avatarColor } = userInfo;
-
+  const errorMsg = 'Error creating account. Please try again.';
   return (
     <>
       <div className="center-display">
+			{error ? <Alert message={errorMsg} type="alert-danger"/> : null }
+			{isLoading ? <div>Loading...</div> : null}
         <h3 className="title">Create an Account</h3>
         <form onSubmit={createUser} className="form">
           <input
