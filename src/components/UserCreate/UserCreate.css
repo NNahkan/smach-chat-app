@@ -2,14 +2,7 @@
   text-align: center;
   margin: 20px 0px 40px;
 }
-
-.avatar-icon {
-  max-width: 100px;
-}
-
-.avatar-b-radius {
-  border-radius: 50%;
-}
+ 
 
 .avatar-text {
   color: var(--sky-blue);
@@ -27,12 +20,12 @@
 	flex-wrap: wrap;
 }
 
-.avatar-list .avatar-icon {
+.avatar-list .create-avatar {
   transition: ease-in-out 0.1s;
   opacity: 0.6;
 }
 
-.avatar-list .avatar-icon:hover {
+.avatar-list .create-avatar:hover {
   cursor: pointer;
   opacity: 1;
 }

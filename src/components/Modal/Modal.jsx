@@ -11,7 +11,7 @@ const Modal = ({ children, title, close, isOpen }) => (
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">{title}</h5>
-              <button onClick={() => close()} className="close">
+              <button onClick={() => close(false)} className="close">
                 &times;
               </button>
             </div>

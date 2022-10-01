@@ -5,6 +5,7 @@ import "./UserCreate.css";
 import { AVATARS } from "../constants.js";
 import { UserContext } from "../../App";
 import Alert from "../Alert/Alert";
+import UserAvatar from "../UserAvatar/UserAvatar";
 
 const UserCreate = ( history ) => {
   const { authService } = useContext(UserContext);
@@ -95,12 +96,7 @@ const UserCreate = ( history ) => {
             placeholder="enter password"
           />
           <div className="avatar-container">
-            <img
-				style={{backgroundColor: avatarColor}}
-              className="avatar-icon avatar-b-radius"
-              src={avatarName}
-              alt="avatar"
-            />
+				<UserAvatar avatar={{avatarName, avatarColor}} className='create-avatar'  />
             <div onClick={() => setModal(true)} className="avatar-text">
               Choose Avatar
             </div>
@@ -119,7 +115,7 @@ const UserCreate = ( history ) => {
             <div
               key={img}
               onClick={() => chooseAvatar(img)}
-              className="avatar-icon"
+              className="create-avatar"
 				  role="presentation"
             >
               <img src={img} alt="avatar" />
