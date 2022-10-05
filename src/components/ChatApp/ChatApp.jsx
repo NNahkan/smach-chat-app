@@ -1,45 +1,65 @@
-import React, { useState,useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { UserContext } from "../../App";
 import Modal from "../Modal/Modal";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import "./ChatApp.css";
 import { useNavigate } from "react-router-dom";
 import Channels from "../Channels/Channels";
+import Chats from "../Chats/Chats";
 
 const ChatApp = () => {
-  const { authService } = useContext(UserContext);
-	const [modal, setModal ] = useState(false);
-	const navigate = useNavigate();
+  const { authService, socketService, chatService } = useContext(UserContext);
+  const [modal, setModal] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [unreadChannels, setUnreadChannels] = useState([]);
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    socketService.establishConnection();
+    return () => socketService.closeConnection();
+  }, []);
 
-	const logoutUser = () => {
-		authService.logoutUser();
-		setModal(false);
-		navigate('/login')
-	}
+  useEffect(() => {
+    socketService.getChatMessage((newMessage, messages) => {
+      if (newMessage.channelId === chatService.selectedChannel.id) {
+        setChatMessages(messages);
+      }
+      if (chatService.unreadChannels.length) {
+			setUnreadChannels(chatService.unreadChannels);
+      }
+    });
+  }, []);
+
+  const logoutUser = () => {
+    authService.logoutUser();
+    setModal(false);
+    navigate("/login");
+  };
 
   return (
     <div className="chat-app">
       <nav>
         <h1>Smack Chat</h1>
         <div className="user-avatar" onClick={() => setModal(true)}>
-           <UserAvatar size="sm" className='nav-avatar' />
+          <UserAvatar size="sm" className="nav-avatar" />
           <div>{authService.name}</div>
         </div>
       </nav>
-		<div className="smack-app">
-			<Channels/>
-		</div>
+      <div className="smack-app">
+        <Channels unread={unreadChannels} />
+        <Chats chats={chatMessages} />
+      </div>
 
-
-		<Modal title="Profile" isOpen={modal}	 close={() => setModal(false)}>
-	<div className="profile">
-		<UserAvatar/>
-		<h4>Username: {authService.name}</h4>
-		<h4>Email: {authService.email}</h4>
-	</div>
-		<button onClick={logoutUser}	className="submit-btn logout-btn">Logout</button>
-		</Modal>
+      <Modal title="Profile" isOpen={modal} close={() => setModal(false)}>
+        <div className="profile">
+          <UserAvatar />
+          <h4>Username: {authService.name}</h4>
+          <h4>Email: {authService.email}</h4>
+        </div>
+        <button onClick={logoutUser} className="submit-btn logout-btn">
+          Logout
+        </button>
+      </Modal>
     </div>
   );
 };

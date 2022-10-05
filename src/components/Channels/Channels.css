@@ -47,6 +47,8 @@
 	color: var(--lunar);
 }
 
+.channel-label.unread { font-weight: bold;}
+
 .channel-list {
 	padding: 20px 0;
 }

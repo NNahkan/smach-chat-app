@@ -11,15 +11,17 @@ import {
 import ChatApp from "./components/ChatApp/ChatApp";
 import UserLogin from "./components/UserLogin/UserLogin";
 import UserCreate from "./components/UserCreate/UserCreate";
-import { AuthService,ChatService } from "./services";
+import { AuthService, ChatService, SocketService } from "./services";
 
 const authService = new AuthService();
 const chatService = new ChatService(authService.getBearerHeader);
+const socketService = new SocketService(chatService);
 export const UserContext = createContext();
 const AuthProvider = ({ children }) => {
   const context = {
     authService,
-	 chatService,
+    chatService,
+    socketService,
     appSelectedChannel: {},
     appSetChannel: (ch) => {
       setAuthContext({ ...authContext, appSelectedChannel: ch });
@@ -34,12 +36,14 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-const PrivateRoute = ({...props}) => {
+const PrivateRoute = ({ ...props }) => {
   const location = useLocation();
-  const context = useContext(UserContext)
-  return (
-	context.authService.isLoggedIn ? <Outlet/> : <Navigate  to='login' state={{ prevPath: location.pathname}}/>
-  )
+  const context = useContext(UserContext);
+  return context.authService.isLoggedIn ? (
+    <Outlet />
+  ) : (
+    <Navigate to="login" state={{ prevPath: location.pathname }} />
+  );
 };
 
 function App() {
@@ -66,7 +70,5 @@ function App() {
     </AuthProvider>
   );
 }
-
- 
 
 export default App;
