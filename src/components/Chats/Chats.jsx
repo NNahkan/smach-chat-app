@@ -3,7 +3,6 @@ import "./Chats.css";
 import { UserContext } from "../../App";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import { formatDate } from "../../helpers/dataForm";
-import { logDOM } from "@testing-library/react";
 
 const Chats = ({ chats }) => {
   const { authService, chatService, appSelectedChannel, socketService } =
@@ -13,14 +12,12 @@ const Chats = ({ chats }) => {
   const [typingMessage, setTypingMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-	useEffect(() => {
-		setMessages(chats);
-		console.log('setmessage calisti');
-	},[chats])
+  useEffect(() => {
+    setMessages(chats);
+  }, [chats]);
 
   useEffect(() => {
-    if (appSelectedChannel.id) {
-		console.log('allmessage calisti');
+    if (!!appSelectedChannel.id) {
       chatService
         .findAllMessagesForChannel(appSelectedChannel.id)
         .then((res) => setMessages(res));
@@ -59,7 +56,6 @@ const Chats = ({ chats }) => {
   };
 
   const sendMessage = (e) => {
-	console.log('sendMessage calisti');
     e.preventDefault();
     const { name, id, avatarName, avatarColor } = authService;
     const user = {
@@ -85,7 +81,7 @@ const Chats = ({ chats }) => {
             <div key={msg.id} className="chat-message">
               <UserAvatar
                 avatar={{
-                  avatarName: msg.userAvatarName,
+                  avatarName: msg.userAvatar,
                   avatarColor: msg.userAvatarColor,
                 }}
                 size="md"
