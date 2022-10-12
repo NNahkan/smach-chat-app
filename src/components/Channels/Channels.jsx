@@ -32,8 +32,20 @@ const Channels = ({ unread }) => {
   useEffect(() => {
     socketService.getChannel((channelList) => {
       setChannels(channelList);
+		console.log('setChannel calisti');
+		console.log(...channels);
     });
   }, []);
+
+  useEffect(() => {
+	socketService.getDeletedChannel((channelList) => {
+      setChannels(channelList);
+		console.log('setdeletedChannel calisti');
+		console.log(channels);
+		appSetChannel(channelList[0]);
+
+    });
+  },[])
 
   const selectChannel = (channel) => () => {
     appSetChannel(channel);

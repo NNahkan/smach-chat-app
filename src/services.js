@@ -153,29 +153,33 @@ export class ChatService {
   }
 
   addChannel = (channel) => {
-	if (!this.channels.length ||(this.channels[this.channels.length - 1].id !== channel.id)) {
-	  this.channels.push(channel)
-	}
-};
-addMessage = (chat) => {
-	if (!this.messages.length || (this.messages[this.messages.length - 1].id !== chat.id)) {
-	  this.messages.push(chat)
-	}
-};
+    if (
+      !this.channels.length ||
+      this.channels[this.channels.length - 1].id !== channel.id
+    ) {
+      this.channels.push(channel);
+    }
+  };
+  addMessage = (chat) => {
+    if (
+      !this.messages.length ||
+      this.messages[this.messages.length - 1].id !== chat.id
+    ) {
+      this.messages.push(chat);
+    }
+  };
   setSelectedChannel = (channel) => (this.selectedChannel = channel);
   getSelectedChannel = () => this.selectedChannel;
   getAllChannels = () => this.channels;
 
   removeChannelById = (chId) => {
-	this.channels.map((channel) => {
-		if (channel.id === chId) {
-			const ind = this.channels.indexOf(channel);
-			console.log(this.channels);
-			this.channels.splice(ind,1);
-			console.log(this.channels);
-		}
-	})
-  }
+    this.channels.map((channel) => {
+      if (channel.id === chId) {
+        const ind = this.channels.indexOf(channel);
+        this.channels.splice(ind, 1);
+      }
+    });
+  };
 
   addToUnread = (urc) => this.unreadChannels.push(urc);
 
@@ -236,8 +240,6 @@ addMessage = (chat) => {
       throw error;
     }
   }
-
-  
 }
 
 export class SocketService {
@@ -266,20 +268,23 @@ export class SocketService {
       const channel = { name, description, id };
       this.chatService.addChannel(channel);
       const channelList = this.chatService.getAllChannels();
+      console.log("channel eklende get channel calisti");
       cb(channelList);
     });
-	 this.socket.on('channelDeleted',() => {
-		const channelList = this.chatService.getAllChannels();
-		cb(channelList);
-	})
-  }
-  
-
-  deleteChannel(channelId){
-	this.socket.emit('deleteChannel', channelId);
-	this.chatService.removeChannelById(channelId);
   }
 
+  deleteChannel(channelId) {
+    this.socket.emit("deleteChannel", channelId);
+  }
+
+  getDeletedChannel(cb) {
+    this.socket.on("channelDeleted", (channelId) => {
+		this.chatService.removeChannelById(channelId);
+      const channelList = this.chatService.getAllChannels();
+      console.log("channel deleted calisti");
+      cb(channelList);
+    });
+  }
 
   addMessage(messageBody, channelId, user) {
     const { userName, userId, userAvatar, userAvatarColor } = user;
