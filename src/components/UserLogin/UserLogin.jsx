@@ -18,7 +18,7 @@ const UserLogin = () => {
     e.preventDefault();
     const { email, password } = userLogins;
     if (!!email && !!password) {
-      const from = location.state.prevPath || "/";
+      const from = location.prevPath || "/";
       authService
         .loginUser(email, password)
         .then(() => navigate(from))

@@ -14,6 +14,7 @@ const Chats = ({ chats }) => {
 
   useEffect(() => {
     setMessages(chats);
+	 console.log("setmessage calisti");
   }, [chats]);
 
   useEffect(() => {
@@ -69,12 +70,23 @@ const Chats = ({ chats }) => {
     setMessageBody("");
   };
 
+  const deleteMessage = (id,user) => () => {
+	const name = authService.name;
+	if( user === name) {
+		chatService.deleteMessage(id);
+	} else {
+		console.log('Uye sadece kendi mesajlarini silebilir');
+	}
+  }
+
   return (
     <div className="chat">
-      <div className="chat-header">
-        <h3>#{appSelectedChannel.name} - </h3>
-        <h4>{appSelectedChannel.description}</h4>
-      </div>
+      { appSelectedChannel ? (
+			<div className="chat-header">
+			<h3>#{appSelectedChannel.name} - </h3>
+			<h4>{appSelectedChannel.description}</h4>
+		 </div>
+		) : <div>No channel</div>}
       <div className="chat-list">
         {!!messages.length ? (
           messages.map((msg) => (
@@ -89,6 +101,7 @@ const Chats = ({ chats }) => {
               <div className="chat-user">
                 <strong>{msg.userName}</strong>
                 <small>{formatDate(msg.timeStamp)}</small>
+					 <button onClick={deleteMessage(msg.id,msg.userName)}>x and id {msg.id}</button>
                 <div className="message-body">{msg.messageBody}</div>
               </div>
             </div>

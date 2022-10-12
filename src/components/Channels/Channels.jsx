@@ -45,6 +45,10 @@ const Channels = ({ unread }) => {
     setNewChannel({ ...newChannel, [name]: value });
   };
 
+  const removeChannel = (chId) => () => {
+	chatService.deleteChannel(chId);
+  }
+
   const createChannel = (e) => {
     e.preventDefault();
 	 const camelChannel = toCamelCase(newChannel.name)
@@ -77,7 +81,8 @@ const Channels = ({ unread }) => {
                     appSelectedChannel.id === channel.id ? "selected" : ""
                   }`}
                 >
-                  #{toCamelCase(channel.name)}
+                  <div>#{toCamelCase(channel.name)}</div>
+						<button onClick={removeChannel(channel.id)} className="channelDelete btn">x</button>
                 </div>
               </div>
             ))

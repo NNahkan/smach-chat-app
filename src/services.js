@@ -2,17 +2,19 @@ import axios from "axios";
 import io from "socket.io-client";
 
 const BASE_URL = "http://localhost:3005/v1";
-const URL_ACCOUNT = `${BASE_URL}/account`;
-const URL_LOGIN = `${URL_ACCOUNT}/login`;
-const URL_REGISTER = `${URL_ACCOUNT}/register`;
+const URL_ACCOUNT = `${BASE_URL}/account/`;
+const URL_LOGIN = `${URL_ACCOUNT}/login/`;
+const URL_REGISTER = `${URL_ACCOUNT}/register/`;
 
-const URL_USER = `${BASE_URL}/user`;
-const URL_USER_ADD = `${URL_USER}/add`;
+const URL_USER = `${BASE_URL}/user/`;
+const URL_USER_ADD = `${URL_USER}/add/`;
 const URL_USER_BY_EMAIL = `${URL_USER}/byEmail/`;
 
-const URL_GET_CHANNELS = `${BASE_URL}/channel`;
+const URL_GET_CHANNELS = `${BASE_URL}/channel/`;
 
 const URL_GET_MESSAGES = `${BASE_URL}/message/byChannel/`;
+
+const URL_DELETE_MESSAGE = `${BASE_URL}/message/`;
 
 const headers = { "Content-Type": "application/json" };
 
@@ -125,6 +127,20 @@ export class AuthService extends User {
       console.log(error);
     }
   }
+
+  async deleteUser() {
+    const headers = this.getBearerHeader();
+    try {
+      console.log(this.id);
+      await axios.all([
+        axios.delete(URL_USER + this.id, { headers }),
+        axios.delete(URL_ACCOUNT + this.email, { headers }),
+      ]);
+      this.logoutUser();
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 export class ChatService {
@@ -189,6 +205,26 @@ export class ChatService {
       console.log(error);
       this.messages = [];
       throw error;
+    }
+  }
+
+  async deleteMessage(msgId) {
+    const headers = this.getAuthHeader();
+    try {
+      await axios.delete(URL_DELETE_MESSAGE + msgId, { headers });
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  async deleteChannel(channelId) {
+    const headers = this.getAuthHeader();
+    try {
+		console.log(channelId);
+      await axios.delete(URL_GET_CHANNELS + channelId, { headers });
+    } catch (error) {
+      console.log(error);
     }
   }
 }

@@ -31,13 +31,14 @@ const AuthProvider = ({ children }) => {
 
   const [authContext, setAuthContext] = useState(context);
 
+  
   return (
     <UserContext.Provider value={authContext}>{children}</UserContext.Provider>
   );
 };
 
 const PrivateRoute = ({ ...props }) => {
-  const location = useLocation();
+	const location = useLocation();
   const context = useContext(UserContext);
   return context.authService.isLoggedIn ? (
     <Outlet />
@@ -47,11 +48,12 @@ const PrivateRoute = ({ ...props }) => {
 };
 
 function App() {
+
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/login" element={<UserLogin />} />
+          <Route path="/login"  element={<UserLogin />} />
           <Route path="/register" element={<UserCreate />} />
           <Route path="/" element={<PrivateRoute />}>
             <Route path="/" element={<ChatApp />} />

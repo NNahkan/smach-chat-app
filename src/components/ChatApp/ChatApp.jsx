@@ -22,6 +22,7 @@ const ChatApp = () => {
   useEffect(() => {
     socketService.getChatMessage((newMessage, messages) => {
       if (newMessage.channelId === chatService.selectedChannel.id) {
+			console.log('chatmessage calisti');
         setChatMessages(messages);
       }
       if (chatService.unreadChannels.length) {
@@ -30,6 +31,7 @@ const ChatApp = () => {
     });
   }, []);
 
+ 
   const logoutUser = () => {
     authService.logoutUser();
     setModal(false);

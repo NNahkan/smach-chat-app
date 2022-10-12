@@ -26,6 +26,11 @@
 	color: var(--cloudy);
 }
 
+.channel-label .inner {
+	display:flex;
+	justify-content: space-between;
+}
+
 .channel-label .inner.selected {
 	padding: 0 5px;
 	border-radius: 5px;
@@ -48,6 +53,26 @@
 }
 
 .channel-label.unread { font-weight: bold;}
+
+.channelDelete {
+	font-size: 1rem;
+    font-weight: bold;
+    opacity: 0.5;
+    transition: ease-in-out 0.2s;
+    padding: 0;
+    background-color: transparent;
+    border: 0;
+	color: white;
+    appearance: 0;
+    margin-bottom: 5px;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+}
+
+.channelDelete:hover {
+	cursor: pointer;
+	opacity: 1;
+ }
 
 .channel-list {
 	padding: 20px 0;
