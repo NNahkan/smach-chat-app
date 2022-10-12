@@ -46,8 +46,8 @@ const Channels = ({ unread }) => {
   };
 
   const removeChannel = (chId) => () => {
-	chatService.deleteChannel(chId);
-  }
+	socketService.deleteChannel(chId);
+  };
 
   const createChannel = (e) => {
     e.preventDefault();

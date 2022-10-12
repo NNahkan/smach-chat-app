@@ -152,11 +152,30 @@ export class ChatService {
     this.messages = [];
   }
 
-  addChannel = (channel) => this.channels.push(channel);
-  addMessage = (chat) => this.messages.push(chat);
+  addChannel = (channel) => {
+	if (!this.channels.length ||(this.channels[this.channels.length - 1].id !== channel.id)) {
+	  this.channels.push(channel)
+	}
+};
+addMessage = (chat) => {
+	if (!this.messages.length || (this.messages[this.messages.length - 1].id !== chat.id)) {
+	  this.messages.push(chat)
+	}
+};
   setSelectedChannel = (channel) => (this.selectedChannel = channel);
   getSelectedChannel = () => this.selectedChannel;
   getAllChannels = () => this.channels;
+
+  removeChannelById = (chId) => {
+	this.channels.map((channel) => {
+		if (channel.id === chId) {
+			const ind = this.channels.indexOf(channel);
+			console.log(this.channels);
+			this.channels.splice(ind,1);
+			console.log(this.channels);
+		}
+	})
+  }
 
   addToUnread = (urc) => this.unreadChannels.push(urc);
 
@@ -218,15 +237,7 @@ export class ChatService {
     }
   }
 
-  async deleteChannel(channelId) {
-    const headers = this.getAuthHeader();
-    try {
-		console.log(channelId);
-      await axios.delete(URL_GET_CHANNELS + channelId, { headers });
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  
 }
 
 export class SocketService {
@@ -257,7 +268,18 @@ export class SocketService {
       const channelList = this.chatService.getAllChannels();
       cb(channelList);
     });
+	 this.socket.on('channelDeleted',() => {
+		const channelList = this.chatService.getAllChannels();
+		cb(channelList);
+	})
   }
+  
+
+  deleteChannel(channelId){
+	this.socket.emit('deleteChannel', channelId);
+	this.chatService.removeChannelById(channelId);
+  }
+
 
   addMessage(messageBody, channelId, user) {
     const { userName, userId, userAvatar, userAvatarColor } = user;
