@@ -70,13 +70,8 @@ const Chats = ({ chats }) => {
     setMessageBody("");
   };
 
-  const deleteMessage = (id,user) => () => {
-	const name = authService.name;
-	if( user === name) {
-		chatService.deleteMessage(id);
-	} else {
-		console.log('Uye sadece kendi mesajlarini silebilir');
-	}
+  const deleteMessage = (id) => () => {
+	socketService.deleteMessage(id);
   }
 
   return (

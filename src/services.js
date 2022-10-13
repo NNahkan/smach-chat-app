@@ -111,7 +111,7 @@ export class AuthService extends User {
       this.setIsLoggedIn(true);
       await this.findUserByEmail();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       throw error;
     }
   }
@@ -161,6 +161,7 @@ export class ChatService {
     }
   };
   addMessage = (chat) => {
+    console.log("kullaniyormusuz lan biz bunu");
     if (
       !this.messages.length ||
       this.messages[this.messages.length - 1].id !== chat.id
@@ -171,12 +172,22 @@ export class ChatService {
   setSelectedChannel = (channel) => (this.selectedChannel = channel);
   getSelectedChannel = () => this.selectedChannel;
   getAllChannels = () => this.channels;
+  getAllMessages = () => this.messages;
 
   removeChannelById = (chId) => {
     this.channels.map((channel) => {
       if (channel.id === chId) {
         const ind = this.channels.indexOf(channel);
         this.channels.splice(ind, 1);
+      }
+    });
+  };
+
+  removeMessageById = (msgId) => {
+    this.messages.map((message) => {
+      if (message.id === msgId) {
+        const ind = this.messages.indexOf(message);
+        this.messages.splice(ind, 1);
       }
     });
   };
@@ -230,16 +241,6 @@ export class ChatService {
       throw error;
     }
   }
-
-  async deleteMessage(msgId) {
-    const headers = this.getAuthHeader();
-    try {
-      await axios.delete(URL_DELETE_MESSAGE + msgId, { headers });
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  }
 }
 
 export class SocketService {
@@ -277,9 +278,22 @@ export class SocketService {
     this.socket.emit("deleteChannel", channelId);
   }
 
+  deleteMessage(messageId) {
+    this.socket.emit("deleteMessage", messageId);
+  }
+
+  getDeletedMessages(cb) {
+    this.socket.on("messageDeleted", (msgId) => {
+		this.chatService.removeMessageById(msgId);
+		const messages = this.chatService.getAllMessages();
+		console.log("message deleted calisti")
+		cb(messages)
+	 });
+  }
+
   getDeletedChannel(cb) {
     this.socket.on("channelDeleted", (channelId) => {
-		this.chatService.removeChannelById(channelId);
+      this.chatService.removeChannelById(channelId);
       const channelList = this.chatService.getAllChannels();
       console.log("channel deleted calisti");
       cb(channelList);

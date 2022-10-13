@@ -31,6 +31,12 @@ const ChatApp = () => {
     });
   }, []);
 
+  useEffect(() => {
+	socketService.getDeletedMessages((messages) => {
+		setChatMessages(messages)
+	})
+  })
+
  
   const logoutUser = () => {
     authService.logoutUser();
