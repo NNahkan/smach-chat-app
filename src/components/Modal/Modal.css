@@ -35,6 +35,8 @@
   align-items: flex-start;
   justify-content: space-between;
   padding: 15px;
+ position: relative;
+
 }
 
 .modal-title {
@@ -46,6 +48,8 @@
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	position: absolute;
+	right: 0;
 }
 
 .modal-functions button {

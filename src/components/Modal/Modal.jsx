@@ -1,20 +1,25 @@
-import React, { useContext } from "react";
+import React, { useContext,useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../../App";
 import PropTypes from "prop-types";
 
 import "./Modal.css";
 
-const Modal = ({ children, title, close, isOpen }) => {
+const Modal = ({ children, title, close, isOpen ,...props}) => {
    const { authService } = useContext(UserContext);
 	const navigate = useNavigate();
-
 
 	const deleteUser = () => {
 		const userId = authService.id;
 		authService.deleteUser(userId);
 		navigate('/login');
 	}
+
+	const flip = () => {
+		props.setting();
+		console.log('flip');
+	};
+
 	return (
 		<>
 		  {isOpen ? (
@@ -36,7 +41,7 @@ const Modal = ({ children, title, close, isOpen }) => {
 						  {title === "Profile" && (
 							 <>
 								<button onClick={deleteUser} className="material-symbols-rounded">delete</button>
-								<button className="material-symbols-rounded">
+								<button onClick={flip} className="material-symbols-rounded">
 								  settings
 								</button>
 							 </>
@@ -48,6 +53,7 @@ const Modal = ({ children, title, close, isOpen }) => {
 				</div>
 			 </div>
 		  ) : null}
+		  
 		</>
 	 );
 }

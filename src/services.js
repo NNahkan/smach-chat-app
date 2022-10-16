@@ -43,6 +43,14 @@ class User {
     this.avatarName = avatarName;
     this.avatarColor = avatarColor;
   }
+
+  updateUserData(userData) {
+	const {name,email,avatarName,avatarColor} = userData;
+	this.name = name;
+	this.email = email;
+	this.avatarName = avatarName;
+	this.avatarColor = avatarColor;
+ }
 }
 
 export class AuthService extends User {
@@ -101,6 +109,27 @@ export class AuthService extends User {
     }
   }
 
+  async updateUser(name, email, avatarName, avatarColor) {
+    const headers = this.getBearerHeader();
+	 const accountId =  (await axios.get(URL_ACCOUNT + 'me',{headers})).data.id;
+    const body = {
+      name: name,
+      email: email,
+      avatarName: avatarName,
+      avatarColor: avatarColor,
+    };
+    try {
+		await axios.all([
+			axios.put(URL_USER + this.id, body, { headers }),
+			axios.put(URL_ACCOUNT + accountId, body, { headers }),
+		 ]);
+		 const response = await axios.put(URL_USER + this.id, body, { headers });
+      this.updateUserData(body);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async loginUser(email, password) {
     const body = { email: email.toLowerCase(), password: password };
     try {
@@ -111,7 +140,7 @@ export class AuthService extends User {
       this.setIsLoggedIn(true);
       await this.findUserByEmail();
     } catch (error) {
-      console.error(error);
+      console.log(error);
       throw error;
     }
   }
@@ -284,11 +313,11 @@ export class SocketService {
 
   getDeletedMessages(cb) {
     this.socket.on("messageDeleted", (msgId) => {
-		this.chatService.removeMessageById(msgId);
-		const messages = this.chatService.getAllMessages();
-		console.log("message deleted calisti")
-		cb(messages)
-	 });
+      this.chatService.removeMessageById(msgId);
+      const messages = this.chatService.getAllMessages();
+      console.log("message deleted calisti");
+      cb(messages);
+    });
   }
 
   getDeletedChannel(cb) {

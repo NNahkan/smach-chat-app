@@ -40,6 +40,30 @@ nav h1 {
 
 .profile h4 { line-height: 2; }
 
+.avatarWrapper {
+	position: relative;
+    width: fit-content;
+    margin: auto;
+}
+
+.modifyAvatar {
+	font-size: 1.5rem;
+	font-weight: 600;
+	position: absolute;
+	right: 0;
+	top: 0;
+	transform: translate(30%,0);
+	background-color: transparent;
+	border: none;
+	cursor: pointer;
+	transition: .4s ease-in-out;
+	opacity: 0.6;
+}
+
+.modifyAvatar:hover {
+	opacity: 1;
+}
+
 .smack-app {
 	display: flex;
 	height: calc(100vh - 60px);
