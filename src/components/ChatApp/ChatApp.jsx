@@ -49,6 +49,12 @@ const ChatApp = () => {
     });
   });
 
+  useEffect(() => {
+	socketService.getUpdateMessages((messages) => {
+		setChatMessages(messages);
+	})
+  })
+
   const logoutUser = () => {
     authService.logoutUser();
     setModal(false);

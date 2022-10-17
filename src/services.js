@@ -44,13 +44,13 @@ class User {
     this.avatarColor = avatarColor;
   }
 
-  updateUserData(userData) {
+ /*  updateUserData(userData) {
 	const {name,email,avatarName,avatarColor} = userData;
 	this.name = name;
 	this.email = email;
 	this.avatarName = avatarName;
 	this.avatarColor = avatarColor;
- }
+ } */
 }
 
 export class AuthService extends User {
@@ -123,8 +123,9 @@ export class AuthService extends User {
 			axios.put(URL_USER + this.id, body, { headers }),
 			axios.put(URL_ACCOUNT + accountId, body, { headers }),
 		 ]);
-		 const response = await axios.put(URL_USER + this.id, body, { headers });
-      this.updateUserData(body);
+		 const response = await axios.get(URL_USER + this.id,  { headers });
+		 console.log(this.channels);
+      this.setUserData(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -220,6 +221,14 @@ export class ChatService {
       }
     });
   };
+
+  updateMessageById = (msg) => {
+	this.messages.map(message => {
+		if ( message.id === msg.id) {
+			message.messageBody = msg.messageBody;
+		} 
+	})
+  }
 
   addToUnread = (urc) => this.unreadChannels.push(urc);
 
@@ -327,6 +336,18 @@ export class SocketService {
       console.log("channel deleted calisti");
       cb(channelList);
     });
+  }
+
+  updateMessage(msg) {
+	this.socket.emit('updateMessage',msg);
+  }
+
+  getUpdateMessages(cb) {
+	this.socket.on('messageUpdated',(msg) => {
+		 this.chatService.updateMessageById(msg);
+		 const messages = this.chatService.getAllMessages();
+		 cb(messages);
+	})
   }
 
   addMessage(messageBody, channelId, user) {

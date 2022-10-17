@@ -3,18 +3,21 @@ import "./Chats.css";
 import { UserContext } from "../../App";
 import UserAvatar from "../UserAvatar/UserAvatar";
 import { formatDate } from "../../helpers/dataForm";
+import socket from "socket.io-client/lib/socket";
 
 const Chats = ({ chats }) => {
   const { authService, chatService, appSelectedChannel, socketService } =
     useContext(UserContext);
   const [messages, setMessages] = useState([]);
   const [messageBody, setMessageBody] = useState("");
+  const [updateBody, setUpdateBody] = useState("");
+  const [updateId, setUpdateId] = useState("");
   const [typingMessage, setTypingMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     setMessages(chats);
-	 console.log("setmessage calisti");
+    console.log("setmessage calisti");
   }, [chats]);
 
   useEffect(() => {
@@ -71,17 +74,43 @@ const Chats = ({ chats }) => {
   };
 
   const deleteMessage = (id) => () => {
-	socketService.deleteMessage(id);
-  }
+    socketService.deleteMessage(id);
+  };
+
+  const update = (msgId) => {
+    if (msgId === updateId) {
+      setUpdateId("");
+    } else {
+      setUpdateId(msgId);
+    }
+  };
+
+  const onUpdate = ({ target: { value } }) => {
+    setUpdateBody(value);
+  };
+
+  const updateTheMessage = (e, msg) => {
+    if (e.keyCode === 13 && msg.messageBody !== updateBody && updateBody !== '') {
+      const { messageBody, ...rest } = msg;
+      const message = { messageBody: updateBody, ...rest };
+      socketService.updateMessage(message);
+      setUpdateId("");
+    } else if (e.keyCode === 27) {
+      setUpdateId("");
+    }
+    //  if esc
+  };
 
   return (
     <div className="chat">
-      { appSelectedChannel ? (
-			<div className="chat-header">
-			<h3>#{appSelectedChannel.name} - </h3>
-			<h4>{appSelectedChannel.description}</h4>
-		 </div>
-		) : <div>No channel</div>}
+      {appSelectedChannel ? (
+        <div className="chat-header">
+          <h3>#{appSelectedChannel.name} - </h3>
+          <h4>{appSelectedChannel.description}</h4>
+        </div>
+      ) : (
+        <div>No channel</div>
+      )}
       <div className="chat-list">
         {!!messages.length ? (
           messages.map((msg) => (
@@ -96,8 +125,31 @@ const Chats = ({ chats }) => {
               <div className="chat-user">
                 <strong>{msg.userName}</strong>
                 <small>{formatDate(msg.timeStamp)}</small>
-					 <button onClick={deleteMessage(msg.id,msg.userName)}>x and id {msg.id}</button>
-                <div className="message-body">{msg.messageBody}</div>
+                {msg.userName === authService.name && (
+                  <>
+                    <button onClick={deleteMessage(msg.id, msg.userName)}>
+                      x
+                    </button>
+                    <button
+                      onClick={() => update(msg.id)}
+							 style={updateId === msg.id ? {opacity:'1'} : {}}
+                      className="updateMessage"
+                    >
+                      {updateId ? 'close' : 'update'}
+                    </button>
+                  </>
+                )}
+                {updateId !== msg.id ? (
+                  <div className="message-body">{msg.messageBody}</div>
+                ) : (
+                  <input
+                    onChange={onUpdate}
+                    onKeyDown={(e) => updateTheMessage(e, msg)}
+                    style={{ display: "block" }}
+						  placeholder='Enter to Save'
+                    type="text"
+                  />
+                )}
               </div>
             </div>
           ))
